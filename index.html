@@ -410,6 +410,7 @@
         }
 
         .fm {
+            margin: 0 calc(var(--u)*-3);
             display: grid;
             grid-template-columns: 1fr 1fr;
             border-top: calc(var(--u)*.3) solid #17315f33;
@@ -418,7 +419,8 @@
         }
 
         .fm>div {
-            padding: 0 calc(var(--u)*2)
+            padding: 0 calc(var(--u)*1.2);
+            min-width: 0
         }
 
         .fm>div+div {
@@ -435,7 +437,8 @@
         .fm span {
             display: block;
             font: 600 calc(var(--u)*3.4)/1.4 var(--pf);
-            white-space: pre-line
+            font-size: calc(var(--u)*3.4 - 1px);
+            white-space: pre
         }
 
         .fm i {
@@ -524,10 +527,10 @@
 
         .st {
             position: absolute;
-            right: calc(var(--u)*-3.6);
-            bottom: calc(var(--u)*-9.4);
-            width: calc(var(--u)*23);
-            height: calc(var(--u)*23);
+            right: calc(var(--u)*-4);
+            bottom: calc(var(--u)*-13.5);
+            width: calc(var(--u)*31);
+            height: calc(var(--u)*31);
             transform: rotate(-13deg) scale(2.8);
             opacity: 0;
             mix-blend-mode: multiply;
@@ -743,6 +746,188 @@
             mask-image: linear-gradient(90deg, #0000, #000)
         }
 
+        .dc {
+            display: block;
+            width: 100%;
+            margin-top: calc(var(--u)*2.4);
+            padding: calc(var(--u)*.6) 0;
+            background: none;
+            border: 0;
+            font: 500 calc(var(--u)*3.3)/1.2 var(--pf);
+            color: var(--n);
+            text-decoration: underline;
+            text-underline-offset: calc(var(--u)*.5);
+            opacity: .85;
+            cursor: pointer
+        }
+
+        .ov {
+            position: fixed;
+            inset: 0;
+            z-index: 15;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 3vmin;
+            background: #050b1a99;
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px)
+        }
+
+        .ov.on {
+            display: flex
+        }
+
+        .md {
+            --u: min(.92vw, .575vh, 4.6px);
+            position: relative;
+            width: calc(var(--u)*100);
+            max-width: 100%;
+            max-height: 94vh;
+            max-height: 94dvh;
+            overflow: auto;
+            padding: calc(var(--u)*6.5) calc(var(--u)*7) calc(var(--u)*6);
+            text-align: center;
+            color: var(--n);
+            border-radius: calc(var(--u)*2.6);
+            background: radial-gradient(circle at 80% 8%, #ffffffb0, #0000 50%), repeating-linear-gradient(115deg, #f6efdc 0 calc(var(--u)*.7), #f1e8d0 calc(var(--u)*.7) calc(var(--u)*1.4));
+            box-shadow: 0 0 0 calc(var(--u)*.5) var(--n), 0 calc(var(--u)*3) calc(var(--u)*9) #000a;
+            animation: mi .4s cubic-bezier(.2, .9, .3, 1.2)
+        }
+
+        @supports(height:1dvh) {
+            .md {
+                --u: min(.92vw, .575dvh, 4.6px)
+            }
+        }
+
+        @keyframes mi {
+            from {
+                opacity: 0;
+                transform: translateY(calc(var(--u)*3)) scale(.94)
+            }
+        }
+
+        .md h3 {
+            font: 700 calc(var(--u)*5.4)/1.2 var(--pf)
+        }
+
+        .md>p {
+            font: italic 500 calc(var(--u)*3.7)/1.3 var(--cg);
+            margin: calc(var(--u)*1) 0 calc(var(--u)*3.2)
+        }
+
+        .md label {
+            display: block;
+            text-align: left;
+            margin-bottom: calc(var(--u)*2.6);
+            font: italic 500 calc(var(--u)*3.6)/1 var(--cg)
+        }
+
+        .md input,
+        .md select,
+        .md textarea {
+            display: block;
+            width: 100%;
+            margin-top: calc(var(--u)*.9);
+            padding: calc(var(--u)*2.2) calc(var(--u)*2.6);
+            font: 500 16px/1.3 var(--pf);
+            color: var(--n);
+            background: #fffdf5;
+            border: calc(var(--u)*.35) solid #17315f66;
+            border-radius: calc(var(--u)*1.2);
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none
+        }
+
+        .md select {
+            background-image: linear-gradient(45deg, #0000 50%, #17315f 50%), linear-gradient(135deg, #17315f 50%, #0000 50%);
+            background-position: calc(100% - calc(var(--u)*4.4)) 55%, calc(100% - calc(var(--u)*3.2)) 55%;
+            background-size: calc(var(--u)*1.2) calc(var(--u)*1.2);
+            background-repeat: no-repeat;
+            padding-right: calc(var(--u)*7)
+        }
+
+        .md textarea {
+            resize: none
+        }
+
+        .md input:focus,
+        .md select:focus,
+        .md textarea:focus {
+            border-color: var(--n);
+            box-shadow: 0 0 0 calc(var(--u)*.5) #d4af3777
+        }
+
+        .er {
+            min-height: calc(var(--u)*4);
+            font: 600 calc(var(--u)*3.3)/1.2 var(--pf);
+            color: var(--r);
+            margin: calc(var(--u)*-.6) 0 calc(var(--u)*1.4)
+        }
+
+        .mb {
+            display: flex;
+            gap: calc(var(--u)*2.4)
+        }
+
+        .mb button {
+            flex: 1;
+            padding: calc(var(--u)*3.4) calc(var(--u)*1);
+            border-radius: calc(var(--u)*1.4);
+            border: calc(var(--u)*.35) solid var(--n);
+            background: var(--n);
+            color: #f0d27a;
+            font: 700 calc(var(--u)*3.9)/1.1 var(--pf);
+            cursor: pointer
+        }
+
+        .mb .gh {
+            flex: .6;
+            background: #0000;
+            color: var(--n)
+        }
+
+        .xx {
+            position: absolute;
+            right: calc(var(--u)*2.4);
+            top: calc(var(--u)*1.6);
+            width: calc(var(--u)*7);
+            height: calc(var(--u)*7);
+            border: 0;
+            background: none;
+            color: var(--n);
+            font: 400 calc(var(--u)*6)/1 var(--pf);
+            cursor: pointer;
+            opacity: .6
+        }
+
+        .qr {
+            width: calc(var(--u)*46);
+            aspect-ratio: 1;
+            margin: calc(var(--u)*3.4) auto calc(var(--u)*4);
+            border: calc(var(--u)*.4) dashed #17315f88;
+            border-radius: calc(var(--u)*1.4);
+            background: #fffdf5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden
+        }
+
+        .qr img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain
+        }
+
+        .qr span {
+            font: italic 500 calc(var(--u)*3.4)/1.3 var(--cg);
+            padding: calc(var(--u)*3);
+            color: #4b6086
+        }
+
         #rot {
             display: none;
             position: fixed;
@@ -830,7 +1015,8 @@
                             stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <path d="M7.5 12.5l3 3 6-7" />
-                        </svg><span id="rvt">Xác nhận tham dự</span></button>
+                        </svg><span id="rvt">Xác nhận tham dự</span></button><button class="dc" id="dc">Rất tiếc, tôi
+                        không thể tham gia</button>
                 </div>
             </div>
             <div class="pg fp dk" id="p1">
@@ -895,6 +1081,33 @@
             </svg>
         </div>
     </div>
+    <div class="ov" id="fo">
+        <form class="md" id="fm2" novalidate><button type="button" class="xx" id="fx" aria-label="Đóng">×</button>
+            <h3>Xác nhận tham dự</h3>
+            <p>Rất mong được đón tiếp bạn</p><label>Họ và tên<input id="fn" type="text" autocomplete="name"
+                    placeholder="Nhập họ và tên"></label><label>Bạn là khách mời của<select id="fr">
+                    <option value="">Chọn một mục</option>
+                    <option>Nhà trai</option>
+                    <option>Nhà gái</option>
+                    <option>Đồng nghiệp</option>
+                    <option>Bạn bè</option>
+                </select></label><label>Số lượng người tham dự<input id="fq" type="number" min="1" max="20" value="1"
+                    inputmode="numeric"></label><label>Lời chúc<textarea id="fw" rows="3"
+                    placeholder="Gửi lời chúc đến cô dâu chú rể"></textarea></label>
+            <div class="er" id="er"></div>
+            <div class="mb"><button type="button" class="gh" id="fc">Đóng</button><button type="submit">Xác
+                    nhận</button></div>
+        </form>
+    </div>
+    <div class="ov" id="no2">
+        <div class="md">
+            <h3>Cảm ơn bạn</h3>
+            <p>Rất tiếc bạn không thể đến dự. Cảm ơn bạn đã dành tình cảm cho chúng mình. Nếu muốn gửi lời chúc, bạn có
+                thể mừng cưới qua mã QR bên dưới.</p>
+            <div class="qr" id="qr"><span>Mã QR chuyển khoản</span></div>
+            <div class="mb"><button type="button" id="nc">Đóng</button></div>
+        </div>
+    </div>
     <div id="rot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"
             stroke-linejoin="round">
             <rect x="6" y="2" width="12" height="20" rx="2.5" />
@@ -902,7 +1115,7 @@
         </svg>
         <p>Vui lòng xoay dọc màn hình<br>để xem thiệp</p>
     </div>
-    <script>var C = { n: "Nguyên", b: "Bích", gn: "Giuse Đào Trọng Nguyên", bn: "Đỗ Ngọc Bích", f1: { o: ["Ông Giuse Đào Huy Hiệp", "Bà Maria Nguyễn Thị Thanh"], a: "1134 Trường Sa, Phú Nhuận, TP. Hồ Chí Minh" }, f2: { o: ["Ông Đỗ Đình Phú", "Bà Trần Thị Bảy"], a: "387 Cách Mạng Tháng Tám, Hòa Hưng, TP. Hồ Chí Minh" }, d: "Thứ Bảy, 09/01/2027", s: "09.01.2027", t: "18:00", v: "Diamond Palace", a: "15A Hồ Văn Huê, Phường Đức Nhuận, TP. Hồ Chí Minh", z: "", p: "", i: [] }; var $ = function (i) { return document.getElementById(i) }; var to = new URLSearchParams(location.search).get("to"); var X = function (i, v) { $(i).textContent = v }; X("cn", C.n + " & " + C.b); X("nn", C.n + " & " + C.b); X("cd", C.s); X("sd", C.s.replace(/\./g, " · ")); X("gn", C.gn.toUpperCase()); X("bn", C.bn.toUpperCase()); X("f1o", C.f1.o.join("\n")); X("f1a", C.f1.a); X("f2o", C.f2.o.join("\n")); X("f2a", C.f2.a); X("gt", to || "Quý khách"); X("d", C.d); X("t", C.t); X("v", C.v); X("a", C.a); if (C.p) $("ph").innerHTML = '<img alt="" src="' + C.p + '">'; var bg = $("bg"), sl = [], si = 0; (C.i || []).forEach(function (u) { var d = document.createElement("div"); d.className = "sl"; d.style.backgroundImage = 'url("' + u + '")'; bg.appendChild(d); sl.push(d) }); function nx() { if (!sl.length) return; sl.forEach(function (x, k) { x.classList.toggle("a", k === si) }); si = (si + 1) % sl.length } nx(); setInterval(nx, 5200); var sp = $("sp2"); for (var k = 0; k < 54; k++) { var e = document.createElement("i"), m = k % 6, z; e.className = "pt" + (m == 0 ? " s2" : m == 1 ? " bk" : ""); z = m == 1 ? 18 + Math.random() * 34 : m == 0 ? 8 + Math.random() * 12 : 3 + Math.random() * 6; e.style.cssText = "left:" + Math.random() * 100 + "%;top:" + Math.random() * 100 + "%;width:" + z + "px;height:" + z + "px;--d:" + (3.5 + Math.random() * 5) + "s;animation-delay:-" + Math.random() * 7 + "s"; sp.appendChild(e) } function flip(a, b) { a.classList.add("f"); if (b) b.classList.remove("dk"); setTimeout(function () { a.style.visibility = "hidden" }, 1500) } $("go").onclick = function () { this.disabled = true; flip($("cv"), $("p1")) }; $("nx").onclick = function () { this.disabled = true; flip($("p1"), $("p2")) }; var gl = $("gl"), R = [-4, 3, -2, 4, -3, 2, -4, 3]; (C.i && C.i.length ? C.i.slice(0, 4) : [0, 0, 0, 0]).forEach(function (u, k) { var p = document.createElement("div"); p.className = "po"; p.style.setProperty("--r", R[k % 8] + "deg"); p.innerHTML = (u ? '<i style="background-image:url(\'' + u + '\')"></i>' : '<i class="ph3"><svg viewBox="0 0 48 48" fill="none" stroke="#4b6086" stroke-width="2"><circle cx="18" cy="28" r="10"/><circle cx="30" cy="28" r="10"/><path d="M24 10l4 5-4 6-4-6z"/></svg></i>') + "<b>" + C.n + " &amp; " + C.b + "</b>"; gl.appendChild(p) }); function lay() { var n = gl.children.length, W = innerWidth * .92, H = innerHeight * .9, g = Math.min(W, H) * .03, b = 0; for (var c = 1; c <= n; c++) { var r = Math.ceil(n / c), w = Math.min((W - g * (c - 1)) / c, (H - g * (r - 1)) / (r * 1.22)); if (w > b) b = w } gl.style.setProperty("--pw", Math.min(b * .99, 380) + "px"); gl.style.setProperty("--gp", g + "px") } lay(); addEventListener("resize", lay); function seq() { var pf = $("pf"), pl = $("pl"), tl = $("tl"); pf.style.display = "block"; var a = pl.animate([{ transform: "scale(0) rotate(-25deg)" }, { transform: "scale(1) rotate(0deg)" }], { duration: 420, easing: "cubic-bezier(.3,1.5,.5,1)", fill: "forwards" }); a.onfinish = function () { pl.animate([{ transform: "scale(1)" }, { transform: "translateX(" + (innerWidth / 2 + 240) + "px) scale(1)" }], { duration: 1900, easing: "cubic-bezier(.5,0,.85,.55)", fill: "forwards" }); tl.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 1400, easing: "ease-out", fill: "forwards" }); setTimeout(function () { $("wr").classList.add("fl"); flip($("p2")) }, 100); setTimeout(function () { $("wr").style.display = "none" }, 900); setTimeout(function () { gl.style.display = "flex";[].forEach.call(gl.children, function (p, k) { setTimeout(function () { p.classList.add("s") }, k * 950) }) }, 950); setTimeout(function () { pf.style.display = "none" }, 2200); }; } var ok = 0; $("rv").onclick = function () { if (ok) { if (C.z) window.open(C.z, "_blank"); return } ok = 1; $("stp").classList.add("on"); $("p2").classList.add("th"); setTimeout(seq, 1000); this.classList.add("ok"); $("rvt").textContent = C.z ? "Đã xác nhận · Gửi qua Zalo ›" : "Đã xác nhận tham dự"; };</script>
+    <script>var C = { n: "Nguyên", b: "Bích", gn: "Giuse Đào Trọng Nguyên", bn: "Đỗ Ngọc Bích", f1: { o: ["Ông Giuse Đào Huy Hiệp", "Bà Maria Nguyễn Thị Thanh"], a: "1134 Trường Sa, Phú Nhuận, TP. Hồ Chí Minh" }, f2: { o: ["Ông Đỗ Đình Phú", "Bà Trần Thị Bảy"], a: "387 Cách Mạng Tháng Tám, Hòa Hưng, TP. Hồ Chí Minh" }, d: "Thứ Bảy, 09/01/2027", s: "09.01.2027", t: "18:00", v: "Diamond Place", a: "15A Hồ Văn Huê, Phường Đức Nhuận, TP. Hồ Chí Minh", z: "https://script.google.com/macros/s/AKfycbyKL05wH3dZAX4nlWEr0n6B-jzIDkDH6-MUAIqOHOXR/exec", p: "", i: [], q: "" }; var $ = function (i) { return document.getElementById(i) }; var to = new URLSearchParams(location.search).get("to"); var X = function (i, v) { $(i).textContent = v }; X("cn", C.n + " & " + C.b); X("nn", C.n + " & " + C.b); X("cd", C.s); X("sd", C.s.replace(/\./g, " · ")); X("gn", C.gn.toUpperCase()); X("bn", C.bn.toUpperCase()); X("f1o", C.f1.o.join("\n")); X("f1a", C.f1.a); X("f2o", C.f2.o.join("\n")); X("f2a", C.f2.a); X("gt", to || "Quý khách"); X("d", C.d); X("t", C.t); X("v", C.v); X("a", C.a); if (C.p) $("ph").innerHTML = '<img alt="" src="' + C.p + '">'; var bg = $("bg"), sl = [], si = 0; (C.i || []).forEach(function (u) { var d = document.createElement("div"); d.className = "sl"; d.style.backgroundImage = 'url("' + u + '")'; bg.appendChild(d); sl.push(d) }); function nx() { if (!sl.length) return; sl.forEach(function (x, k) { x.classList.toggle("a", k === si) }); si = (si + 1) % sl.length } nx(); setInterval(nx, 5200); var sp = $("sp2"); for (var k = 0; k < 54; k++) { var e = document.createElement("i"), m = k % 6, z; e.className = "pt" + (m == 0 ? " s2" : m == 1 ? " bk" : ""); z = m == 1 ? 18 + Math.random() * 34 : m == 0 ? 8 + Math.random() * 12 : 3 + Math.random() * 6; e.style.cssText = "left:" + Math.random() * 100 + "%;top:" + Math.random() * 100 + "%;width:" + z + "px;height:" + z + "px;--d:" + (3.5 + Math.random() * 5) + "s;animation-delay:-" + Math.random() * 7 + "s"; sp.appendChild(e) } function flip(a, b) { a.classList.add("f"); if (b) b.classList.remove("dk"); setTimeout(function () { a.style.visibility = "hidden" }, 1500) } $("go").onclick = function () { this.disabled = true; flip($("cv"), $("p1")) }; $("nx").onclick = function () { this.disabled = true; flip($("p1"), $("p2")) }; function fit() { [].forEach.call(document.querySelectorAll(".fm span"), function (e) { e.style.fontSize = ""; var w = e.clientWidth, f = parseFloat(getComputedStyle(e).fontSize), c = 0; e.style.display = "inline-block"; while (e.offsetWidth > w && c++ < 40) { f -= .25; e.style.fontSize = f + "px" } e.style.display = "" }) } fit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit); addEventListener("resize", fit); var gl = $("gl"), R = [-4, 3, -2, 4, -3, 2, -4, 3]; (C.i && C.i.length ? C.i.slice(0, 4) : [0, 0, 0, 0]).forEach(function (u, k) { var p = document.createElement("div"); p.className = "po"; p.style.setProperty("--r", R[k % 8] + "deg"); p.innerHTML = (u ? '<i style="background-image:url(\'' + u + '\')"></i>' : '<i class="ph3"><svg viewBox="0 0 48 48" fill="none" stroke="#4b6086" stroke-width="2"><circle cx="18" cy="28" r="10"/><circle cx="30" cy="28" r="10"/><path d="M24 10l4 5-4 6-4-6z"/></svg></i>') + "<b>" + C.n + " &amp; " + C.b + "</b>"; gl.appendChild(p) }); function lay() { var n = gl.children.length, W = innerWidth * .92, H = innerHeight * .9, g = Math.min(W, H) * .03, b = 0; for (var c = 1; c <= n; c++) { var r = Math.ceil(n / c), w = Math.min((W - g * (c - 1)) / c, (H - g * (r - 1)) / (r * 1.22)); if (w > b) b = w } gl.style.setProperty("--pw", Math.min(b * .99, 380) + "px"); gl.style.setProperty("--gp", g + "px") } lay(); addEventListener("resize", lay); function seq() { var pf = $("pf"), pl = $("pl"), tl = $("tl"); pf.style.display = "block"; var a = pl.animate([{ transform: "scale(0) rotate(-25deg)" }, { transform: "scale(1) rotate(0deg)" }], { duration: 420, easing: "cubic-bezier(.3,1.5,.5,1)", fill: "forwards" }); a.onfinish = function () { pl.animate([{ transform: "scale(1)" }, { transform: "translateX(" + (innerWidth / 2 + 240) + "px) scale(1)" }], { duration: 1900, easing: "cubic-bezier(.5,0,.85,.55)", fill: "forwards" }); tl.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 1400, easing: "ease-out", fill: "forwards" }); setTimeout(function () { $("wr").classList.add("fl"); flip($("p2")) }, 100); setTimeout(function () { $("wr").style.display = "none" }, 900); setTimeout(function () { gl.style.display = "flex";[].forEach.call(gl.children, function (p, k) { setTimeout(function () { p.classList.add("s") }, k * 950) }) }, 950); setTimeout(function () { pf.style.display = "none" }, 2200); }; } var ok = 0; if (C.q) $("qr").innerHTML = '<img alt="QR" src="' + C.q + '">'; function send(d) { if (!C.z) return; try { fetch(C.z, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(d) }) } catch (e) { } } function conf() { ok = 1; $("stp").classList.add("on"); $("p2").classList.add("th"); $("rv").classList.add("ok"); $("rvt").textContent = "Đã xác nhận tham dự"; $("dc").style.visibility = "hidden"; setTimeout(seq, 1000) } $("rv").onclick = function () { if (!ok) $("fo").classList.add("on") }; $("fx").onclick = $("fc").onclick = function () { $("fo").classList.remove("on") }; $("dc").onclick = function () { $("no2").classList.add("on") }; $("nc").onclick = function () { $("no2").classList.remove("on") }; $("fm2").oninput = function () { $("er").textContent = "" }; $("fm2").onsubmit = function (e) { e.preventDefault(); var n = $("fn").value.trim(), g = $("fr").value, q = parseInt($("fq").value, 10), er = $("er"); if (!n) { er.textContent = "Vui lòng nhập họ và tên"; $("fn").focus(); return } if (!g) { er.textContent = "Vui lòng chọn bạn là khách mời của ai"; return } if (!(q >= 1 && q <= 20)) { er.textContent = "Số lượng người tham dự từ 1 đến 20"; return } er.textContent = ""; send({ time: new Date().toISOString(), name: n, group: g, count: q, wish: $("fw").value.trim(), invited: to || "" }); $("fo").classList.remove("on"); setTimeout(conf, 450); };</script>
 </body>
 
 </html>
