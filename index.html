@@ -34,11 +34,26 @@
             position: fixed;
             inset: 0;
             overflow: hidden;
-            background: var(--iv)
+            background: radial-gradient(circle at 80% 8%, #ffffffb0, #0000 50%), repeating-linear-gradient(115deg, #F6EFDC 0 3px, #f1e8d0 3px 6px)
+        }
+
+        #bg .bg-map {
+            position: absolute;
+            z-index: 0;
+            left: -100vw;
+            top: 55%;
+            width: 300vw;
+            height: auto;
+            aspect-ratio: 285/125;
+            transform: translateY(-50%);
+            -webkit-mask-image: linear-gradient(#0000, #000 12%, #000 88%, #0000);
+            mask-image: linear-gradient(#0000, #000 12%, #000 88%, #0000);
+            pointer-events: none
         }
 
         .sl {
             position: absolute;
+            z-index: 1;
             inset: 0;
             background-size: cover;
             background-position: center;
@@ -52,6 +67,7 @@
         #bg:after {
             content: "";
             position: absolute;
+            z-index: 2;
             inset: 0;
             background: radial-gradient(ellipse at 50% 45%, #0000 45%, #80002022 100%), linear-gradient(#ffffff14, #80002010)
         }
@@ -336,7 +352,7 @@
                 linear-gradient(180deg, #4a001400 0%, #4a001410 32%, #3a000f8c 58%, #330010e6 100%),
                 var(--ph, linear-gradient(160deg, #9c1c3a, #5c0017));
             background-size: cover;
-            background-position: center 25%;
+            background-position: center 100%;
             background-repeat: no-repeat
         }
 
@@ -344,21 +360,53 @@
 
         .pq-box {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, .68fr) minmax(0, 1.55fr);
+            grid-template-rows: auto 1fr;
+            align-items: start;
+            column-gap: calc(var(--u)*1.8);
+            row-gap: calc(var(--u)*2.2);
             margin: 0 calc(var(--u)*-2);
-            padding: calc(var(--u)*3.6) calc(var(--u)*1.6);
+            padding: calc(var(--u)*3.2) calc(var(--u)*2.4);
             background: #50001566;
             border: calc(var(--u)*.3) solid #d4af3766;
             border-radius: calc(var(--u)*1.8)
         }
 
-        .pq-c { min-width: 0; padding: 0 calc(var(--u)*1.6); text-align: center }
-        .pq-c+.pq-c { border-left: calc(var(--u)*.3) solid #d4af3766 }
+        .pq-c {
+            min-width: 0;
+            padding: 0;
+            text-align: center;
+            align-self: start
+        }
+        .pq-c.pq-groom { grid-column: 1; grid-row: 2 }
+        .pq-c.pq-bride { grid-column: 2; grid-row: 2 }
+        .pq-motto {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: calc(var(--u)*1.4);
+            margin: 0 0 calc(var(--u)*.4);
+            color: #f6d77f;
+            font: 700 calc(var(--u)*4.6)/1.2 var(--pf);
+            letter-spacing: .025em;
+            text-align: center;
+            text-shadow: 0 1px calc(var(--u)*1.2) #24000888
+        }
+        .pq-motto:before, .pq-motto:after {
+            content: "";
+            flex: 1 1 calc(var(--u)*5);
+            max-width: calc(var(--u)*9);
+            height: calc(var(--u)*.3);
+            background: linear-gradient(90deg, #d4af3700, #d4af37cc)
+        }
+        .pq-motto:after { transform: scaleX(-1) }
 
         .pq-w { font: 700 calc(var(--u)*3.7)/1.25 var(--cg); letter-spacing: .2em; margin: 0 -.2em 0 0; color: #f0d27a }
-        .pq-r { font: italic 600 calc(var(--u)*3.3)/1.2 var(--cg); color: #f6e9bd; margin: calc(var(--u)*.6) 0 calc(var(--u)*2.2) }
-        .pq-t { font: italic 600 calc(var(--u)*4.4)/1.4 var(--cg) }
-        .pq-s { display: block; margin-top: calc(var(--u)*2); font: 600 calc(var(--u)*3.3)/1.3 var(--cg); color: #f0d27a }
+        .pq-r { font: italic 600 calc(var(--u)*3.3)/1.2 var(--cg); color: #f6e9bd; margin: calc(var(--u)*.6) 0 calc(var(--u)*1.4) }
+        .pq-t { font: italic 600 calc(var(--u)*4.4)/1.35 var(--cg) }
+        .pq-s { display: block; margin-top: calc(var(--u)*1.2); font: 600 calc(var(--u)*3.3)/1.3 var(--cg); color: #f0d27a }
 
         #pq .nb { margin-top: calc(var(--u)*3.4) }
 
@@ -908,11 +956,33 @@
             text-shadow: 0 .2cqw 0 #d4af3766;
             clip-path: inset(-30% 100% -30% 0)
         }
+
+        #fzpl .fz-plane-icon {
+            --cu: 1px;
+            overflow: visible;
+            transform-box: fill-box;
+            transform-origin: 50% 50%;
+            filter: drop-shadow(0 calc(var(--cu)*1) calc(var(--cu)*1.4) #0006) drop-shadow(0 0 0 #f6e27a00);
+            animation: fzPlanePulse 2.8s ease-in-out infinite
+        }
+
+        @keyframes fzPlanePulse {
+            0%, 100% {
+                opacity: .8;
+                transform: scale(1);
+                filter: drop-shadow(0 calc(var(--cu)*1) calc(var(--cu)*1.4) #0006) drop-shadow(0 0 0 #f6e27a00)
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.06);
+                filter: drop-shadow(0 calc(var(--cu)*1) calc(var(--cu)*1.4) #0006) drop-shadow(0 0 calc(var(--cu)*2.4) #f6e27acc)
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div id="bg"></div>
+    <div id="bg"><svg class="bg-map" viewBox="0 0 285 125" aria-hidden="true" focusable="false"><path d="M-33.0 14.0L-27.0 10.0L-21.0 8.5L-6.0 10.0L7.0 10.0L20.0 12.0L40.0 12.0L48.0 12.0L53.0 17.0L42.0 19.0L42.0 23.0L50.0 25.0L55.0 29.0L56.0 23.0L58.0 18.0L65.0 19.0L70.0 20.0L73.0 24.0L79.0 28.0L75.0 33.0L69.0 36.0L65.0 38.0L61.0 40.0L59.0 45.0L54.0 49.0L55.0 54.0L53.0 54.0L51.0 50.0L45.0 50.0L40.0 51.0L38.0 54.0L38.0 59.0L40.0 62.0L44.0 61.0L48.0 59.0L47.0 64.0L51.0 65.0L52.0 70.0L56.0 71.0L58.0 72.0L55.0 72.5L51.0 71.0L49.0 68.0L43.0 65.5L38.0 64.0L30.0 60.0L29.0 57.0L23.0 51.0L20.0 48.0L17.0 46.0L14.0 45.0L11.0 40.0L11.0 33.0L7.0 29.0L1.0 23.0L-5.0 20.0L-13.0 20.0L-18.0 22.0L-25.0 24.0L-30.0 20.0L-31.0 18.0ZM62.0 2.0L75.0 -2.0L105.0 -3.0L115.0 0.0L115.0 8.0L105.0 12.0L92.0 20.0L85.0 17.0L80.0 12.0L75.0 4.0ZM50.0 58.0L55.0 57.0L61.0 60.0L57.0 60.0ZM111.0 15.0L121.0 14.0L121.0 16.0L113.0 16.5ZM58.0 72.0L63.0 68.0L73.0 69.0L83.0 75.0L85.0 80.0L91.0 82.0L100.0 85.0L100.0 89.0L96.0 94.0L95.0 100.0L90.0 103.0L86.0 106.0L82.0 114.0L77.0 115.0L78.0 118.0L73.0 120.0L70.0 125.0L67.0 130.0L66.0 134.0L63.0 133.0L60.0 127.0L62.0 118.0L64.0 110.0L65.0 98.0L59.0 94.0L54.0 86.0L55.0 82.0L57.0 78.0ZM126.0 37.0L126.0 43.0L130.0 44.0L135.0 41.0L138.0 38.0L142.0 36.5L145.0 36.0L147.0 38.0L151.0 42.0L153.0 40.0L148.0 34.5L154.0 38.0L158.0 42.0L161.0 40.0L164.0 39.0L162.0 43.0L165.0 43.5L171.0 43.5L170.0 47.0L169.5 49.0L170.0 52.0L174.0 58.0L178.0 67.0L180.0 67.5L187.0 64.0L192.0 61.0L194.0 58.0L192.0 55.0L191.0 53.0L185.0 50.0L183.0 50.0L185.0 52.0L192.0 54.5L197.0 55.0L202.0 55.5L205.0 59.0L208.0 64.0L212.0 72.0L215.0 67.0L215.0 64.0L222.0 59.0L225.0 58.0L227.0 60.0L229.0 64.0L233.0 64.0L233.0 72.0L235.0 67.0L238.0 70.0L240.0 71.0L244.0 68.0L243.0 64.0L241.0 61.0L243.0 58.5L245.0 59.0L249.0 57.7L253.0 55.5L257.0 50.0L256.0 48.0L254.0 45.0L257.0 43.0L253.0 42.0L257.0 40.0L260.0 40.0L261.0 45.0L264.0 45.0L264.0 39.0L270.0 37.0L275.0 32.0L276.0 27.0L272.0 26.0L276.0 22.0L285.0 21.0L291.0 23.0L291.0 29.0L298.0 24.0L298.0 18.0L307.0 19.0L315.0 15.0L315.0 11.0L305.0 10.0L295.0 11.0L285.0 9.0L275.0 8.0L265.0 9.0L248.0 6.0L240.0 3.0L230.0 4.0L215.0 7.0L205.0 7.0L203.0 11.0L195.0 11.0L185.0 12.0L179.0 13.0L175.0 14.0L168.0 11.0L165.0 10.0L160.0 9.0L153.0 10.0L149.0 13.0L140.0 18.0L140.0 21.0L145.0 22.0L143.0 24.0L143.0 26.0L140.0 27.0L137.0 29.0L133.0 31.5L131.0 32.0L134.0 34.0L133.0 36.5ZM130.0 30.0L136.0 29.0L136.5 27.0L133.0 24.0L133.0 21.5L130.0 21.5L129.0 24.0L132.0 26.0L130.0 28.0ZM125.0 28.0L129.0 28.0L129.0 25.0L126.0 25.5ZM118.0 59.0L119.0 66.0L118.0 68.0L122.0 72.0L127.0 75.5L133.0 75.0L139.0 74.0L143.0 75.5L144.0 79.0L147.0 85.0L148.0 92.0L147.0 97.0L150.0 107.0L153.0 113.0L155.0 115.0L161.0 114.0L167.0 109.0L170.0 104.0L170.0 100.0L175.0 95.0L175.0 90.0L174.0 85.0L177.0 81.0L183.0 75.0L186.0 68.5L178.0 68.0L173.0 62.0L172.0 58.0L169.0 53.0L167.0 50.0L160.0 48.0L155.0 49.0L150.0 48.0L145.0 46.0L146.0 43.0L140.0 43.0L133.0 45.0L129.0 44.0L125.0 49.0L122.0 53.0ZM179.0 105.0L182.0 105.0L185.0 95.0L184.0 92.0L179.0 97.0ZM249.0 102.0L257.0 98.0L265.0 92.0L272.0 92.0L271.0 95.0L276.0 97.0L277.0 91.0L281.0 99.0L288.0 106.0L286.0 114.0L282.0 119.0L276.0 118.0L270.0 115.0L265.0 112.0L259.0 114.0L250.0 114.0L249.0 108.0ZM307.0 114.0L313.0 118.0L310.0 121.0L308.0 121.0ZM307.0 121.0L309.0 122.0L306.0 126.0L302.0 126.0ZM230.0 75.0L233.0 76.0L239.0 82.0L241.0 86.0L237.0 84.0L231.0 78.0ZM244.0 78.0L249.0 75.0L253.0 74.0L254.0 79.0L251.0 84.0L246.0 83.0L244.0 81.0ZM240.0 86.0L249.0 88.0L245.0 88.0ZM255.0 79.0L260.0 78.5L257.0 81.0L256.0 84.0L255.0 85.0ZM266.0 81.0L273.0 82.0L282.0 86.0L285.0 90.0L277.0 89.0L273.0 88.0L267.0 84.0ZM265.0 47.0L270.0 46.0L275.0 44.0L277.0 40.0L276.0 39.0L274.0 42.0L271.0 44.0L267.0 45.0ZM275.0 38.0L280.0 37.0L277.0 35.0ZM255.0 62.0L257.0 62.0L257.0 66.0L255.0 66.0ZM257.0 72.0L261.0 72.0L261.0 74.0L258.0 73.0ZM215.0 70.5L217.0 73.0L215.0 74.0L214.8 72.0Z" fill="#800020" opacity=".2"></path></svg></div>
     <div id="sp2"></div>
     <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
     <button id="mu" type="button" aria-label="Bật/tắt nhạc">
@@ -1024,16 +1094,15 @@
             </div>
 
             <div class="pg fp dk" id="pq">
-                <div class="pq-sp"></div>
+<div class="pq-sp"></div>
 
                 <div class="pq-box">
-                    <div class="pq-c">
-                        <div class="pq-w">CHÚ RỂ</div>
+                    <div class="pq-motto">Hai đức tin, một lời nguyện ước</div>
+                    <div class="pq-c pq-groom">
                         <p class="pq-t">“Sự gì Thiên Chúa đã kết hợp, loài người không được phân ly.”</p>
                         <span class="pq-s">(Mt 19, 3–12)</span>
                     </div>
-                    <div class="pq-c">
-                        <div class="pq-w">CÔ DÂU</div>
+                    <div class="pq-c pq-bride">
                         <p class="pq-t">“Nếu cả hai cùng có tín tâm, có giới hạnh, có lòng bố thí, có trí tuệ, sống hòa hợp với nhau, họ sẽ được gặp lại nhau không chỉ trong đời này mà cả trong đời sau.”</p>
                         <span class="pq-s">(Kinh Tăng Chi Bộ – Chương 4)</span>
                     </div>
@@ -1181,8 +1250,26 @@
             <div class="fzmsg" id="fzmsg"><span>Cảm ơn và hẹn gặp mọi người</span></div>
             <svg class="fzrt top" id="fzs2" viewBox="0 0 100 175">
                 <g id="fzpl" opacity="0">
-                    <path transform="translate(.5 1) rotate(90 12 12)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="#0004" />
-                    <path transform="rotate(90 12 12)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="#800020" stroke="#d4af37" stroke-width=".7" stroke-linejoin="round" />
+                    <svg class="fz-plane-icon" x="0" y="4" width="24" height="16" viewBox="0 0 120 80" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="fzPlaneGold" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0" stop-color="#fbeaa0" />
+                                <stop offset=".45" stop-color="#d9b445" />
+                                <stop offset="1" stop-color="#b08a22" />
+                            </linearGradient>
+                        </defs>
+                        <g stroke="#8a6a14" stroke-width=".6" stroke-linejoin="round" fill="url(#fzPlaneGold)">
+                            <path d="M60 38L38 5L49 4L86 35Z" />
+                            <path d="M60 42L38 75L49 76L86 45Z" />
+                            <path d="M16 38L5 24L12 23L29 36Z" />
+                            <path d="M16 42L5 56L12 57L29 44Z" />
+                            <path d="M6 37.5L96 35.5Q113 37 118 40Q113 43 96 44.5L6 42.5Q3 40 6 37.5Z" />
+                            <rect x="53" y="17" width="13" height="5" rx="2.5" />
+                            <rect x="53" y="58" width="13" height="5" rx="2.5" />
+                        </g>
+                        <path d="M100 38.3Q108 38.7 111 40Q108 41.3 100 41.7Z" fill="#6b5210" opacity=".6" />
+                        <path d="M10 38.7L94 37.2" stroke="#fff" stroke-opacity=".6" stroke-width=".9" stroke-linecap="round" fill="none" />
+                    </svg>
                 </g>
             </svg>
         </div>
@@ -1205,6 +1292,8 @@
                     <option value="">Chọn một mục</option>
                     <option>Nhà trai</option>
                     <option>Nhà gái</option>
+                    <option>Đồng nghiệp</option>
+                    <option>Bạn bè</option>
                 </select>
             </label>
 
@@ -1266,7 +1355,7 @@
             t: "11:00",
             v: "Diamond Place",
             a: "15A Hồ Văn Huê, Phường Đức Nhuận, TP. Hồ Chí Minh",
-            z: "https://script.google.com/macros/s/AKfycbyfMuBTNW49-OAtB0q-j-dPyX_4yZnQSpEtq63EEjgFO2UpGeDwhtA91BAJykE9DeLIzQ/exec",
+            z: "https://script.google.com/macros/s/AKfycbxba-zBQllRIrGo8nJ1NOFJ6LarX_kZoqNUOHWuR4qX3ghjqpyrI3DxN8b5HblbQUty4w/exec",
             p: "https://pik.vn/i/gNe3di-260987D9RdNh1Iw.webp",
             pq: "https://pik.vn/i/lQ17KFuSgHNT0XaBjkzIUg.webp",
             mp: [
@@ -1339,6 +1428,10 @@
         if (C.p) {
             $("ph").innerHTML = '<img alt="" referrerpolicy="no-referrer" src="' + esc(C.p) + '">';
             $("ph").querySelector("img").addEventListener("load", function () { fitPw(); });
+        }
+
+        if (C.pq) {
+            $("pq").style.setProperty("--ph", "url('" + String(C.pq).replace(/'/g, "%27") + "')");
         }
 
         var bg = $("bg");
@@ -1477,10 +1570,6 @@
             flip($("pq"), $("p1"));
         };
 
-        if (C.pq) {
-            $("pq").style.setProperty("--ph", "url('" + String(C.pq).replace(/'/g, "%27") + "')");
-        }
-
         (function () {
             // Giờ cưới theo múi giờ Asia/Ho_Chi_Minh (UTC+7, không có giờ mùa hè)
             var T = new Date("2027-01-09T" + (C.t || "00:00") + ":00+07:00").getTime();
@@ -1618,7 +1707,7 @@
             $("fzs2").setAttribute("viewBox", "0 0 100 " + f(H));
 
             var lane = land ? H * .105 : Math.max(12, H * .075);
-            var msgW = land ? Math.min(60, H * 1.05) : 84;
+            var msgW = land ? Math.min(60, H * 1.05) : 72;
             var hsc = land ? .34 : .45;
             var hh = hsc * 19.35 / 2;
 
@@ -1665,12 +1754,32 @@
             }
 
             var x5 = xs[4], y5 = ys[4];
-            var rise = Math.max(18, Math.min(36, (y5 - lane) * .5));
-            var qy = Math.max(lane + 6, y5 - rise);
-            d += " C" + f(x5 - 8) + " " + f(y5) + " -3 " + f(y5 - rise * .4) + " -3 " + f(qy);
-            d += " C-3 " + f(qy - (qy - lane) * .55) + " 6 " + f(lane) + " 22 " + f(lane);
-            pre.push(d);
-            d += " L120 " + f(lane);
+            var K = .5523;                        // quarter-circle Bézier constant
+            var topTrackY = land ? 8 : 10;        // lane shared by the flight and the message
+            var topTrackEndX = 108;               // leaves the screen on the right
+
+            // Two bends joined by a straight climb. Every join has a matching tangent, so the plane
+            // banks smoothly (west → north → east) with no kinks. The route between destinations is untouched.
+            var R1 = land ? 4.5 : 5.5;            // bend leaving the last destination
+            var R2 = land ? 5 : 6;                // bend rolling out onto the top lane
+            var avail = y5 - topTrackY;
+            if (avail < R1 + R2 + 2) { var sc = Math.max(.3, avail / (R1 + R2 + 2)); R1 *= sc; R2 *= sc; }
+            var climbX = Math.max(2, x5 - R1);
+            R1 = x5 - climbX;                     // keep the first bend a true quarter circle
+            var climbTopY = topTrackY + R2;
+            var topTrackStartX = climbX + R2;
+
+            // 1) curve upward immediately after the last photo
+            d += " C" + f(x5 - K * R1) + " " + f(y5) + " " + f(climbX) + " " + f(y5 - R1 + K * R1) + " " + f(climbX) + " " + f(y5 - R1);
+            // 2) climb straight up the left side
+            d += " L" + f(climbX) + " " + f(climbTopY);
+            pre.push(d);                          // pre[5] = end of climb
+            // 3) roll out horizontally at the top of the screen
+            d += " C" + f(climbX) + " " + f(climbTopY - K * R2) + " " + f(topTrackStartX - K * R2) + " " + f(topTrackY) + " " + f(topTrackStartX) + " " + f(topTrackY);
+            pre.push(d);                          // pre[6] = level at the top
+            // 4) fly straight across while the text is revealed behind the tail
+            d += " L" + f(topTrackEndX) + " " + f(topTrackY);
+            pre.push(d);                          // pre[7]
 
             var g = "";
             var gStep = land ? 12.5 : 16;
@@ -1682,12 +1791,16 @@
             requestAnimationFrame(function () { fin.classList.add("on"); });
 
             var p0 = $("fz0"), pp = $("fzp");
+            // Reset the route and message state in case the final sequence is replayed.
+            pp.style.opacity = .9;
+            pp.style.strokeDasharray = "0 99999";
+            msg.style.clipPath = "inset(-30% 100% -30% 0)";
             p0.setAttribute("d", d);
             pp.setAttribute("d", d);
 
             var arr = pre.map(function (q) { p0.setAttribute("d", q); return p0.getTotalLength(); });
             p0.setAttribute("d", d);
-            var Lall = p0.getTotalLength(), Lr = arr[5];
+            var Lall = p0.getTotalLength(), Lstops = arr[4], Lr = arr[5], Ltop = arr[6];
 
             var heart = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
             var hs = "", ph2 = "";
@@ -1710,7 +1823,9 @@
             $("fzh").innerHTML = hs;
             $("fzf").innerHTML = ph2;
             guardImgs($("fzf"));
-            msg.style.top = f(lane) + "cqw";
+            // Align the closing message with the top flight lane so it is revealed
+            // immediately behind the airplane's tail at the top of the screen.
+            msg.style.top = f(topTrackY) + "cqw";
 
             var hearts = [].slice.call(document.querySelectorAll(".fzht"));
             var photos = [].slice.call(document.querySelectorAll(".fzph"));
@@ -1725,8 +1840,13 @@
             fit();
             if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 
-            var T = [0, 2, 4, 6, 8, 10, 12.8, 15.4];
-            var Sx = [0, arr[0], arr[1], arr[2], arr[3], arr[4], Lr, Lall];
+            // Separate timing for the climb and the final horizontal sweep keeps both motions natural.
+            var Sx = [0, arr[0], arr[1], arr[2], arr[3], arr[4], Lr, Ltop, Lall];
+            var T = [0, 2, 4, 6, 8, 10];          // the five destinations keep their original timing
+            var vExit = land ? 24 : 26;
+            T.push(T[5] + Math.max(1.6, (Lr - Lstops) / vExit));          // bend + climb
+            T.push(T[6] + Math.max(.5, (Ltop - Lr) / (vExit * .8)));      // roll-out onto the top lane
+            T.push(T[7] + Math.max(3.6, (Lall - Ltop) / 24));             // horizontal pass + text
 
             var n = T.length, m = [], D = [];
             for (var a = 0; a < n - 1; a++) m.push((Sx[a + 1] - Sx[a]) / (T[a + 1] - T[a]));
@@ -1752,13 +1872,30 @@
                 function frame(now) {
                     var t = (now - t0) / 1000;
                     var s = sAt(t);
+                    // Position the plane at the exact arc-length point on the same SVG path
+                    // used by the visible trail, and orient it along the path's local tangent.
                     var p = p0.getPointAtLength(s);
-                    var q0 = p0.getPointAtLength(Math.max(s - .5, 0));
-                    var q = p0.getPointAtLength(Math.min(s + .5, Lall));
-                    var ang = Math.atan2(q.y - q0.y, q.x - q0.x) * 180 / Math.PI;
+                    var tangentStep = 1;
+                    var q0 = p0.getPointAtLength(Math.max(s - tangentStep, 0));
+                    var q1 = p0.getPointAtLength(Math.min(s + tangentStep, Lall));
+                    var ang = Math.atan2(q1.y - q0.y, q1.x - q0.x) * 180 / Math.PI;
 
                     plane.setAttribute("transform", "translate(" + p.x + " " + p.y + ") rotate(" + ang + ") scale(.583) translate(-12 -12)");
-                    pp.style.strokeDasharray = Math.min(s, Lr) + " 99999";
+                    // Keep the connected map route visible through all five destinations
+                    // and the upward curve. Fade it out as the airplane reaches the
+                    // horizontal writing lane, before the message reveal begins.
+                    var routeFadeStart = Lr;
+                    if (s < Ltop) {
+                        var fadeSpan = Math.max(1, Ltop - routeFadeStart);
+                        var fadeProgress = Math.max(0, Math.min(1, (s - routeFadeStart) / fadeSpan));
+                        var fadeEase = fadeProgress * fadeProgress * (3 - 2 * fadeProgress);
+                        pp.style.strokeDasharray = Math.min(s, Ltop) + " " + (Lall + 1);
+                        pp.style.opacity = .9 * (1 - fadeEase);
+                    } else {
+                        // No SVG flight line is present during the horizontal message-writing pass.
+                        pp.style.strokeDasharray = "0 99999";
+                        pp.style.opacity = 0;
+                    }
 
                     while (shown < 5 && t >= T[shown + 1]) {
                         photos[shown].classList.add("on");
@@ -1766,8 +1903,12 @@
                         shown++;
                     }
 
-                    if (shown === 5 && p.y <= lane + 8) {
-                        rvMax = Math.max(rvMax, Math.min(100, p.x - 6));
+                    if (shown === 5 && t >= T[7]) {
+                        // Reveal the message exactly behind the airplane's tail.
+                        // The airplane is 24 viewBox units wide, scaled by .583;
+                        // its tail edge sits about 6.4 units behind its path position.
+                        var tailRevealX = Math.max(0, Math.min(100, p.x - 6.4));
+                        rvMax = Math.max(rvMax, tailRevealX);
                         msg.style.clipPath = "inset(-30% " + (100 - rvMax) + "% -30% 0)";
                     }
 
