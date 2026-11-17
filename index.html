@@ -2144,7 +2144,7 @@
                 var wish = wishText(c[4]);
 
                 // Skip a header row that the sheet API did not detect, and rows without a message
-                if (isNaN(t) && i === 0 && /^(time|timestamp|th[oờ]i gian)/i.test(wishText(c[0]))) return;
+                if (isNaN(t) && i === 0 && /^(time|timestamp|d[aấ]u th[oờ]i gian|th[oờ]i gian)/i.test(wishText(c[0]))) return;
                 if (!wish) return;
 
                 out.push({ t: isNaN(t) ? 0 : t, i: i, name: wishText(c[1]) || "Khách mời", wish: wish });
@@ -2155,36 +2155,106 @@
             return out;
         }
 
+        function wishUrl() { return "https://docs.google.com/spreadsheets/d/" + WISH.id + "/gviz/tq?sheet=" + encodeURIComponent(WISH.sheet); }
+
+        function jsonp(url, ok, fail) {
+            var cb = "wishCb" + Date.now() + Math.floor(Math.random() * 1e5);
+            var sc = document.createElement("script");
+            var finished = false, timer;
+
+            function end(err, data) {
+                if (finished) return;
+                finished = true;
+                clearTimeout(timer);
+                try { delete window[cb]; } catch (e) { window[cb] = function () { }; }
+                if (sc.parentNode) sc.parentNode.removeChild(sc);
+                if (err) fail(); else ok(data);
+            }
+
+            window[cb] = function (d) { end(false, d); };
+            sc.onerror = function () { end(true); };
+            timer = setTimeout(function () { end(true); }, 9000);
+            sc.src = url.replace("{cb}", cb);
+            document.body.appendChild(sc);
+        }
+
+        function csvRows(t) {
+            var rows = [], row = [], f = "", q = false, i, ch;
+            for (i = 0; i < t.length; i++) {
+                ch = t[i];
+                if (q) {
+                    if (ch === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; }
+                    else f += ch;
+                } else if (ch === '"') q = true;
+                else if (ch === ",") { row.push(f); f = ""; }
+                else if (ch === "\n" || ch === "\r") {
+                    if (ch === "\r" && t[i + 1] === "\n") i++;
+                    row.push(f); f = ""; rows.push(row); row = [];
+                } else f += ch;
+            }
+            if (f || row.length) { row.push(f); rows.push(row); }
+            return rows;
+        }
+
+        function rowsToTable(list) {
+            return { table: { rows: list.map(function (x) {
+                var a = Array.isArray(x) ? x : [x.time || x.timestamp, x.name, null, null, x.wish || x.message];
+                return { c: [{ v: a[0] }, { v: a[1] }, null, null, { v: a[4] }] };
+            }) } };
+        }
+
+        // Source 1: Google Sheets query API (JSONP, no CORS needed)
+        function viaJsonp(ok, fail) {
+            jsonp(wishUrl() + "&headers=1&tqx=out:json;responseHandler:{cb}", function (r) {
+                if (!r || r.status === "error") return fail();
+                try { ok(parseWishes(r)); } catch (e) { fail(); }
+            }, fail);
+        }
+
+        // Source 2: CSV export of the same sheet
+        function viaCsv(ok, fail) {
+            if (!window.fetch) return fail();
+            fetch(wishUrl() + "&tqx=out:csv").then(function (r) {
+                if (!r.ok) throw 0;
+                return r.text();
+            }).then(function (t) {
+                if (/^\s*</.test(t)) throw 0;
+                var rows = csvRows(t).slice(1);
+                ok(parseWishes(rowsToTable(rows)));
+            }).catch(fail);
+        }
+
+        // Source 3: the existing Apps Script web app (needs the doGet shown in the instructions)
+        function viaScript(ok, fail) {
+            if (!C.z) return fail();
+            jsonp(C.z + (C.z.indexOf("?") < 0 ? "?" : "&") + "action=wishes&callback={cb}", function (d) {
+                var list = d && (d.rows || d.data || d);
+                if (!Array.isArray(list)) return fail();
+                try { ok(parseWishes(rowsToTable(list))); } catch (e) { fail(); }
+            }, fail);
+        }
+
         function loadWishes(done) {
             if (wishState.busy) return;
             wishState.busy = true;
 
-            var cb = "wishCb" + Date.now();
-            var sc = document.createElement("script");
-            var finished = false, timer;
+            var srcs = [viaJsonp, viaCsv, viaScript], fails = 0, won = false;
 
-            function end(err, items) {
-                if (finished) return;
-                finished = true;
-                clearTimeout(timer);
-                try { delete window[cb]; } catch (e) { window[cb] = undefined; }
-                if (sc.parentNode) sc.parentNode.removeChild(sc);
+            function fin(err, items) {
+                if (won) return;
+                won = true;
                 wishState.busy = false;
                 wishState.err = !!err;
                 if (!err) { wishState.items = items; wishState.at = Date.now(); }
                 if (done) done();
             }
 
-            window[cb] = function (r) {
-                if (!r || r.status === "error") return end(true);
-                try { end(false, parseWishes(r)); } catch (e) { end(true); }
-            };
-
-            sc.onerror = function () { end(true); };
-            timer = setTimeout(function () { end(true); }, 12000);
-            sc.src = "https://docs.google.com/spreadsheets/d/" + WISH.id + "/gviz/tq?sheet=" + encodeURIComponent(WISH.sheet) +
-                "&headers=1&tqx=" + encodeURIComponent("out:json;responseHandler:" + cb);
-            document.body.appendChild(sc);
+            // All sources run in parallel; the first one that answers wins
+            srcs.forEach(function (src) {
+                src(function (items) { fin(false, items); }, function () {
+                    if (++fails === srcs.length) fin(true);
+                });
+            });
         }
 
         function renderWishes() {
@@ -2194,7 +2264,7 @@
             if (!items) {
                 box.innerHTML = wishState.busy || !wishState.err
                     ? '<div class="wd">Đang tải lời chúc…</div>'
-                    : '<div class="wd">Chưa thể tải lời chúc lúc này.<br><button type="button" id="wr">Thử lại</button></div>';
+                    : '<div class="wd">Chưa thể tải lời chúc lúc này. Vui lòng kiểm tra Google Sheet đã chia sẻ “Bất kỳ ai có đường liên kết – Người xem”.<br><button type="button" id="wr">Thử lại</button></div>';
                 var rb = $("wr");
                 if (rb) rb.onclick = function () { openWishes(true); };
                 return;
