@@ -806,6 +806,71 @@
         .md .gf p { font: italic 500 calc(var(--u)*3.7)/1.3 var(--cg); margin: 0 }
         .md .gf .qr { margin-bottom: 0 }
 
+        /* ===== Guest wishes (final page) ===== */
+        #wb {
+            --gb: #80002055;
+            --gc: #f0d27acc;
+            position: fixed;
+            left: 50%;
+            bottom: calc(env(safe-area-inset-bottom, 0px) + 1.4vmin);
+            z-index: 9;
+            transform: translate(-50%, 1.2vmin);
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 1.6vmin;
+            padding: 1.5vmin 4vmin;
+            border: 1px solid var(--g);
+            border-radius: 99px;
+            background: var(--n);
+            color: #f0d27a;
+            font: 700 max(12px, min(3.4vmin, 15px))/1.2 var(--pf);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: opacity .8s ease, transform .8s ease;
+            animation: btnGlow 2.4s ease-in-out infinite;
+            --u: 1.4px
+        }
+        #wb[hidden] { display: none }
+        #wb.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto }
+        #wb svg { width: 1.1em; height: 1.1em; flex: none }
+        #wb:focus-visible { outline: 2px solid var(--g); outline-offset: 2px }
+
+        .wl h3 { font: 400 calc(var(--u)*10)/1.1 var(--sc); color: var(--n); text-shadow: 0 calc(var(--u)*.3) 0 #d4af3766 }
+        .wl .orn { display: flex; align-items: center; justify-content: center; gap: calc(var(--u)*2); margin: calc(var(--u)*1.4) 0 calc(var(--u)*1) }
+        .wl .orn:before, .wl .orn:after { content: ""; flex: 0 1 calc(var(--u)*20); height: 1px; background: linear-gradient(90deg, #0000, var(--g)) }
+        .wl .orn:after { transform: scaleX(-1) }
+        .wl .orn svg { width: calc(var(--u)*4); height: calc(var(--u)*4); fill: var(--r) }
+        .wl>p { margin-bottom: calc(var(--u)*3.4) }
+        .wl .ls { display: flex; flex-direction: column; gap: calc(var(--u)*3); text-align: left }
+        .wl .wc {
+            position: relative;
+            padding: calc(var(--u)*3.4) calc(var(--u)*4) calc(var(--u)*3.2);
+            background: #fffdf5cc;
+            border: calc(var(--u)*.35) solid #d4af3799;
+            border-radius: calc(var(--u)*1.6);
+            box-shadow: 0 calc(var(--u)*.8) calc(var(--u)*2.4) #80002018, inset 0 0 0 calc(var(--u)*.9) #fffdf5, inset 0 0 0 calc(var(--u)*1.15) #d4af3733;
+            opacity: 0;
+            transform: translateY(calc(var(--u)*2));
+            animation: wcIn .6s ease forwards;
+            animation-delay: calc(var(--i, 0) * .09s)
+        }
+        .wl .wc:before {
+            content: "\201C";
+            position: absolute;
+            top: calc(var(--u)*-.6);
+            right: calc(var(--u)*3.4);
+            font: 400 calc(var(--u)*11)/1 var(--pf);
+            color: #d4af3766
+        }
+        @keyframes wcIn { to { opacity: 1; transform: none } }
+        .wl .wn { display: flex; align-items: center; gap: calc(var(--u)*1.6); font: 700 calc(var(--u)*4.2)/1.25 var(--pf); color: var(--n); padding-right: calc(var(--u)*6) }
+        .wl .wn svg { width: calc(var(--u)*3.4); height: calc(var(--u)*3.4); flex: none; fill: var(--r) }
+        .wl .wt { margin-top: calc(var(--u)*1.4); font: italic 500 calc(var(--u)*4.4)/1.4 var(--cg); color: #4a0014; white-space: pre-wrap; overflow-wrap: anywhere }
+        .wl .wd { margin: calc(var(--u)*8) 0; font: italic 500 calc(var(--u)*4)/1.4 var(--cg) }
+        .wl .wd button { margin-top: calc(var(--u)*2.4); padding: calc(var(--u)*2) calc(var(--u)*5); border-radius: calc(var(--u)*1.4); border: calc(var(--u)*.35) solid var(--n); background: var(--n); color: #f0d27a; font: 700 calc(var(--u)*3.6)/1.1 var(--pf); cursor: pointer }
+
         .qr {
             width: calc(var(--u)*46);
             aspect-ratio: 1;
@@ -1373,6 +1438,21 @@
         </div>
     </div>
 
+    <button id="wb" type="button" hidden>
+        <svg viewBox="0 0 24 24" fill="#f0d27a" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/></svg>
+        <span id="wbt">Lời chúc yêu thương</span>
+    </button>
+
+    <div class="ov" id="wo">
+        <div class="md wl" role="dialog" aria-modal="true" aria-labelledby="wh">
+            <button type="button" class="xx" id="wx" aria-label="Đóng">×</button>
+            <h3 id="wh">Lời chúc yêu thương</h3>
+            <div class="orn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/></svg></div>
+            <p id="wsub">Những tình cảm bạn bè gửi đến Nguyên &amp; Bích</p>
+            <div class="ls" id="wl"></div>
+        </div>
+    </div>
+
     <div class="ov" id="fo">
         <form class="md" id="fm2" novalidate>
             <button type="button" class="xx" id="fx" aria-label="Đóng">×</button>
@@ -1465,7 +1545,7 @@
                 "https://pik.vn/i/D55oXd-Fv_EuUc7wxQVH-A.webp", 
                 "https://pik.vn/i/3sEnrNLBgHVUZ58PWvlK2w.webp",
                 "https://pik.vn/i/UslSyXKOwrhSkRCU3VpRYA.webp", 
-                "https://pik.vn/i/17JhE0r-XxboAHT7lw-OuA.webp"
+                "https://pik.vn/i/2xbaxVAqVi4Bc3YKSnJPgA.webp"
             ],
             i: [],
             q: "qr.png"
@@ -2019,6 +2099,7 @@
                     } else {
                         plane.setAttribute("opacity", 0);
                         msg.style.clipPath = "inset(-30% 0 -30% 0)";
+                        showWishBtn();
                     }
                 }
 
@@ -2027,6 +2108,140 @@
 
             setTimeout(run, 1500);
         }
+
+
+        // ===== Guest wishes: read-only from the existing Google Sheet (Data: A=time, B=name, E=wish) =====
+        var WISH = { id: "1sh1KiKRRxAXuL4sPP9D5_rU-uNQZFRw_ePBcojrlle0", sheet: "Data" };
+        var wishState = { items: null, err: false, busy: false, at: 0 };
+        var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/></svg>';
+
+        function wishTime(c) {
+            if (!c || c.v == null) return NaN;
+            var v = c.v, m;
+            if (typeof v === "number") return v;
+            v = String(v).trim();
+            if ((m = /^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?/.exec(v))) {
+                return new Date(+m[1], +m[2], +m[3], +m[4] || 0, +m[5] || 0, +m[6] || 0).getTime();
+            }
+            if ((m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/.exec(v))) {
+                return new Date(+m[3], +m[2] - 1, +m[1], +m[4] || 0, +m[5] || 0, +m[6] || 0).getTime();
+            }
+            return Date.parse(v);
+        }
+
+        function wishText(c) {
+            if (!c || c.v == null) return "";
+            return String(c.v).trim();
+        }
+
+        function parseWishes(r) {
+            var rows = (r && r.table && r.table.rows) || [];
+            var out = [];
+
+            rows.forEach(function (row, i) {
+                var c = row.c || [];
+                var t = wishTime(c[0]);
+                var wish = wishText(c[4]);
+
+                // Skip a header row that the sheet API did not detect, and rows without a message
+                if (isNaN(t) && i === 0 && /^(time|timestamp|th[oờ]i gian)/i.test(wishText(c[0]))) return;
+                if (!wish) return;
+
+                out.push({ t: isNaN(t) ? 0 : t, i: i, name: wishText(c[1]) || "Khách mời", wish: wish });
+            });
+
+            // Oldest first; row order keeps ties stable
+            out.sort(function (a, b) { return a.t - b.t || a.i - b.i; });
+            return out;
+        }
+
+        function loadWishes(done) {
+            if (wishState.busy) return;
+            wishState.busy = true;
+
+            var cb = "wishCb" + Date.now();
+            var sc = document.createElement("script");
+            var finished = false, timer;
+
+            function end(err, items) {
+                if (finished) return;
+                finished = true;
+                clearTimeout(timer);
+                try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+                if (sc.parentNode) sc.parentNode.removeChild(sc);
+                wishState.busy = false;
+                wishState.err = !!err;
+                if (!err) { wishState.items = items; wishState.at = Date.now(); }
+                if (done) done();
+            }
+
+            window[cb] = function (r) {
+                if (!r || r.status === "error") return end(true);
+                try { end(false, parseWishes(r)); } catch (e) { end(true); }
+            };
+
+            sc.onerror = function () { end(true); };
+            timer = setTimeout(function () { end(true); }, 12000);
+            sc.src = "https://docs.google.com/spreadsheets/d/" + WISH.id + "/gviz/tq?sheet=" + encodeURIComponent(WISH.sheet) +
+                "&headers=1&tqx=" + encodeURIComponent("out:json;responseHandler:" + cb);
+            document.body.appendChild(sc);
+        }
+
+        function renderWishes() {
+            var box = $("wl");
+            var items = wishState.items;
+
+            if (!items) {
+                box.innerHTML = wishState.busy || !wishState.err
+                    ? '<div class="wd">Đang tải lời chúc…</div>'
+                    : '<div class="wd">Chưa thể tải lời chúc lúc này.<br><button type="button" id="wr">Thử lại</button></div>';
+                var rb = $("wr");
+                if (rb) rb.onclick = function () { openWishes(true); };
+                return;
+            }
+
+            if (!items.length) {
+                box.innerHTML = '<div class="wd">Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc nhé!</div>';
+                return;
+            }
+
+            box.innerHTML = items.map(function (w, k) {
+                return '<article class="wc" style="--i:' + Math.min(k, 12) + '">' +
+                    '<div class="wn">' + HEART + '<span>' + esc(w.name) + '</span></div>' +
+                    '<div class="wt">' + esc(w.wish) + '</div></article>';
+            }).join("");
+        }
+
+        function openWishes(force) {
+            $("wo").classList.add("on");
+            renderWishes();
+
+            if (force || wishState.err || !wishState.items || Date.now() - wishState.at > 20000) {
+                wishState.err = false;
+                loadWishes(function () {
+                    renderWishes();
+                    wishCount();
+                });
+                renderWishes();
+            }
+        }
+
+        function wishCount() {
+            var n = wishState.items ? wishState.items.length : 0;
+            $("wbt").textContent = n ? "Lời chúc yêu thương (" + n + ")" : "Lời chúc yêu thương";
+        }
+
+        function showWishBtn() {
+            var b = $("wb");
+            if (!b.hidden) return;
+            b.hidden = false;
+            requestAnimationFrame(function () { requestAnimationFrame(function () { b.classList.add("on"); }); });
+            loadWishes(wishCount);
+        }
+
+        $("wb").onclick = function () { openWishes(false); };
+        $("wx").onclick = function () { $("wo").classList.remove("on"); };
+        $("wo").onclick = function (e) { if (e.target === this) this.classList.remove("on"); };
 
         function seq() {
             var pf = $("pf");
