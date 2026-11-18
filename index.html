@@ -264,6 +264,88 @@
         .pb.go { cursor: default }
         .pb.go svg { animation-play-state: paused }
 
+        /* Attention cue: gentle float + expanding gold ripple + hint label (plane artwork unchanged) */
+        .pb { animation: pbf 2.8s ease-in-out infinite }
+        .pb.go { animation: none }
+
+        @keyframes pbf {
+            0%, 100% { translate: 0 0 }
+            50% { translate: 0 calc(var(--cu)*-1.6) }
+        }
+
+        .pb:before, .pb:after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: calc(var(--cu)*30);
+            height: calc(var(--cu)*30);
+            margin: calc(var(--cu)*-15) 0 0 calc(var(--cu)*-15);
+            border-radius: 50%;
+            border: calc(var(--cu)*.45) solid #f6e27a;
+            box-shadow: 0 0 calc(var(--cu)*2.2) #f6e27a88, inset 0 0 calc(var(--cu)*2) #f6e27a44;
+            opacity: 0;
+            pointer-events: none;
+            animation: pbr 2.8s ease-out infinite
+        }
+
+        .pb:after { animation-delay: 1.4s }
+        .pb.go:before, .pb.go:after { animation: none; opacity: 0 }
+
+        @keyframes pbr {
+            0% { opacity: .75; transform: scale(.55) }
+            80%, 100% { opacity: 0; transform: scale(1.45) }
+        }
+
+        .ph {
+            position: absolute;
+            left: 50%;
+            top: calc(100% + var(--cu)*3);
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: calc(var(--cu)*1.2);
+            white-space: nowrap;
+            padding: calc(var(--cu)*.9) calc(var(--cu)*2.6);
+            border: calc(var(--cu)*.3) solid #d4af3799;
+            border-radius: 99px;
+            background: #4a001266;
+            color: #f6e27a;
+            font: italic 700 calc(var(--u)*3.7)/1.1 var(--cg);
+            letter-spacing: .06em;
+            text-shadow: 0 1px calc(var(--cu)*.8) #0008;
+            pointer-events: none;
+            animation: phb 2.8s ease-in-out infinite;
+            transition: opacity .35s ease
+        }
+
+        .ph:before {
+            content: "";
+            width: calc(var(--cu)*1.4);
+            height: calc(var(--cu)*1.4);
+            border-radius: 50%;
+            background: #f6e27a;
+            box-shadow: 0 0 calc(var(--cu)*1.6) #f6e27a;
+            animation: phd 1.4s ease-in-out infinite
+        }
+
+        .pb.go .ph { opacity: 0; animation: none }
+
+        @keyframes phb {
+            0%, 100% { opacity: .75 }
+            50% { opacity: 1 }
+        }
+
+        @keyframes phd {
+            0%, 100% { transform: scale(.7); opacity: .6 }
+            50% { transform: scale(1.2); opacity: 1 }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pb, .pb:before, .pb:after { animation: none }
+            .pb:before { opacity: .35 }
+        }
+
         @keyframes pbl {
             0%, 100% {
                 opacity: .8;
@@ -273,7 +355,7 @@
             50% {
                 opacity: 1;
                 transform: rotate(-14deg) scale(1.06);
-                filter: drop-shadow(0 calc(var(--cu)*1) calc(var(--cu)*1.4) #0006) drop-shadow(0 0 calc(var(--cu)*2.4) #f6e27acc)
+                filter: drop-shadow(0 calc(var(--cu)*1) calc(var(--cu)*1.4) #0006) drop-shadow(0 0 calc(var(--cu)*3.2) #f6e27aee)
             }
         }
 
@@ -1382,6 +1464,7 @@
                         <path d="M100 38.3Q108 38.7 111 40Q108 41.3 100 41.7Z" fill="#6b5210" opacity=".6" />
                         <path d="M10 38.7L94 37.2" stroke="#fff" stroke-opacity=".6" stroke-width=".9" stroke-linecap="round" fill="none" />
                     </svg>
+                    <span class="ph" aria-hidden="true">Nhấn vào máy bay</span>
                 </button>
             </div>
         </div>
@@ -1545,7 +1628,7 @@
                 "https://pik.vn/i/DCZBzOnzmtvC9NWVfs3t6A.webp", 
                 "https://pik.vn/i/17JhE0r-XxboAHT7lw-OuA.webp",
                 "https://pik.vn/i/3sEnrNLBgHVUZ58PWvlK2w.webp", 
-                "https://pik.vn/i/UslSyXKOwrhSkRCU3VpRYA.webp"
+                "https://pik.vn/i/mrK-FGqMsZQkEGIm5q7AnA.webp"
             ],
             i: [],
             q: "qr.png"
@@ -2112,7 +2195,7 @@
 
         // ===== Guest wishes: read-only from the existing Google Sheet (Data: A=time, B=name, E=wish) =====
         var WISH = { id: "1sh1KiKRRxAXuL4sPP9D5_rU-uNQZFRw_ePBcojrlle0", sheet: "Data" };
-        var wishState = { items: null, err: false, busy: false, at: 0 };
+        var wishState = { items: null, err: false, busy: false, at: 0, q: [], pending: [] };
         var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/></svg>';
 
         function wishTime(c) {
@@ -2155,7 +2238,7 @@
             return out;
         }
 
-        function wishUrl() { return "https://docs.google.com/spreadsheets/d/" + WISH.id + "/gviz/tq?sheet=" + encodeURIComponent(WISH.sheet); }
+        function wishUrl() { return "https://docs.google.com/spreadsheets/d/" + WISH.id + "/gviz/tq?sheet=" + encodeURIComponent(WISH.sheet) + "&_=" + Date.now(); }
 
         function jsonp(url, ok, fail) {
             var cb = "wishCb" + Date.now() + Math.floor(Math.random() * 1e5);
@@ -2227,15 +2310,32 @@
         // Source 3: the existing Apps Script web app (needs the doGet shown in the instructions)
         function viaScript(ok, fail) {
             if (!C.z) return fail();
-            jsonp(C.z + (C.z.indexOf("?") < 0 ? "?" : "&") + "action=wishes&callback={cb}", function (d) {
+            jsonp(C.z + (C.z.indexOf("?") < 0 ? "?" : "&") + "action=wishes&_=" + Date.now() + "&callback={cb}", function (d) {
                 var list = d && (d.rows || d.data || d);
                 if (!Array.isArray(list)) return fail();
                 try { ok(parseWishes(rowsToTable(list))); } catch (e) { fail(); }
             }, fail);
         }
 
+        function sameWish(a, b) { return a.name === b.name && a.wish === b.wish; }
+
+        function reconcile() {
+            var items = wishState.items || [];
+            wishState.pending = wishState.pending.filter(function (p) {
+                return !items.some(function (w) { return sameWish(w, p); });
+            });
+        }
+
+        // Oldest first (same order as the sheet); a just-submitted wish is newest, so it lands last
+        function allWishes() {
+            var list = (wishState.items || []).concat(wishState.pending);
+            return list.map(function (w, k) { return { w: w, k: k }; })
+                .sort(function (a, b) { return a.w.t - b.w.t || a.k - b.k; })
+                .map(function (x) { return x.w; });
+        }
+
         function loadWishes(done) {
-            if (wishState.busy) return;
+            if (wishState.busy) { if (done) wishState.q.push(done); return; }
             wishState.busy = true;
 
             var srcs = [viaJsonp, viaCsv, viaScript], fails = 0, won = false;
@@ -2245,8 +2345,10 @@
                 won = true;
                 wishState.busy = false;
                 wishState.err = !!err;
-                if (!err) { wishState.items = items; wishState.at = Date.now(); }
-                if (done) done();
+                if (!err) { wishState.items = items; wishState.at = Date.now(); reconcile(); }
+                var cbs = wishState.q.splice(0);
+                if (done) cbs.unshift(done);
+                cbs.forEach(function (fn) { fn(); });
             }
 
             // All sources run in parallel; the first one that answers wins
@@ -2259,7 +2361,7 @@
 
         function renderWishes() {
             var box = $("wl");
-            var items = wishState.items;
+            var items = (wishState.items || wishState.pending.length) ? allWishes() : null;
 
             if (!items) {
                 box.innerHTML = wishState.busy || !wishState.err
@@ -2297,7 +2399,7 @@
         }
 
         function wishCount() {
-            var n = wishState.items ? wishState.items.length : 0;
+            var n = (wishState.items || wishState.pending.length) ? allWishes().length : 0;
             $("wbt").textContent = n ? "Lời chúc yêu thương (" + n + ")" : "Lời chúc yêu thương";
         }
 
@@ -2380,21 +2482,51 @@
             $("qr").innerHTML = '<img alt="QR" referrerpolicy="no-referrer" src="' + esc(C.q) + '">';
         }
 
+        // Resolves true once the Apps Script has answered (it writes the row before replying), false on failure.
         function send(d) {
-            if (!C.z) return;
+            if (!C.z) return Promise.resolve(false);
 
             try {
-                fetch(C.z, {
+                return fetch(C.z, {
                     method: "POST",
                     mode: "no-cors",
                     headers: {
                         "Content-Type": "text/plain;charset=utf-8"
                     },
                     body: JSON.stringify(d)
-                });
+                }).then(function () { return true; }, function () { return false; });
             } catch (e) {
                 // Không làm gián đoạn trải nghiệm nếu gửi dữ liệu thất bại.
+                return Promise.resolve(false);
             }
+        }
+
+        // After a successful save: show the new wish at once, then re-read the sheet until it confirms the row
+        function syncWishes(rec) {
+            var tries = 0;
+
+            if (rec.wish) {
+                wishState.pending.push({ t: Date.now(), i: 1e9, name: rec.name, wish: rec.wish });
+                wishCount();
+                if ($("wo").classList.contains("on")) renderWishes();
+            }
+
+            function seen() {
+                return (wishState.items || []).some(function (w) { return sameWish(w, rec); });
+            }
+
+            function go() {
+                wishState.err = false;
+                loadWishes(function () {
+                    wishCount();
+                    if ($("wo").classList.contains("on")) renderWishes();
+                    // The sheet can lag a moment behind the write: retry a few times with growing pauses
+                    if ((!rec.wish || seen()) && !wishState.err) return;
+                    if (++tries < 6) setTimeout(go, 1200 + tries * 800);
+                });
+            }
+
+            go();
         }
 
         function conf(att) {
@@ -2476,7 +2608,7 @@
 
             er.textContent = "";
 
-            send({
+            var rec = {
                 time: new Date().toISOString(),
                 name: n,
                 group: g,
@@ -2484,7 +2616,9 @@
                 count: att ? q : 0,
                 wish: $("fw").value.trim(),
                 invited: to || ""
-            });
+            };
+
+            send(rec).then(function (saved) { if (saved) syncWishes(rec); });
 
             $("fo").classList.remove("on");
             setTimeout(function () { conf(att); }, 450);
