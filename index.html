@@ -1620,7 +1620,7 @@
             t: "11:00",
             v: "Diamond Place",
             a: "15A Hồ Văn Huê, Phường Đức Nhuận, TP. Hồ Chí Minh",
-            z: "https://script.google.com/macros/s/AKfycbw90z0joEis3S1oXDeyqetccQS9OJo4_pi1L22LnuoeiZIXlQSMOVjjMcNQ6AwU_QSA7A/exec",
+            z: "https://script.google.com/macros/s/AKfycbzu0EB-K7o26owEbprtXuHU-CtXz2WQv4BuSy2yFs37pfTQK94HLFc1C4wP60t7VLAGdA/exec",
             p: "https://pik.vn/i/gNe3di-260987D9RdNh1Iw.webp",
             pq: "https://pik.vn/i/lQ17KFuSgHNT0XaBjkzIUg.webp",
             mp: [
@@ -2198,16 +2198,21 @@
         var wishState = { items: null, err: false, busy: false, at: 0, q: [], pending: [] };
         var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/></svg>';
 
+        var WDBG = /[?&]wishdebug\b/.test(location.search);
+        var HDR = /^(time|timestamp|date|d[aấ]u th[oờ]i gian|th[oờ]i gian|name|h[oọ] t[eê]n|t[eê]n|guest|wish|message|l[oờ]i ch[uú]c|l[oờ]i nh[aắ]n|n[oộ]i dung)/i;
+
         function wishTime(c) {
             if (!c || c.v == null) return NaN;
-            var v = c.v, m;
+            var v = c.v, m, d, mo;
             if (typeof v === "number") return v;
             v = String(v).trim();
             if ((m = /^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?/.exec(v))) {
                 return new Date(+m[1], +m[2], +m[3], +m[4] || 0, +m[5] || 0, +m[6] || 0).getTime();
             }
-            if ((m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/.exec(v))) {
-                return new Date(+m[3], +m[2] - 1, +m[1], +m[4] || 0, +m[5] || 0, +m[6] || 0).getTime();
+            if ((m = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/.exec(v))) {
+                d = +m[1]; mo = +m[2];
+                if (mo > 12 && d <= 12) { d = +m[2]; mo = +m[1]; } // mm/dd/yyyy when only that reading is valid
+                return new Date(+m[3], mo - 1, d, +m[4] || 0, +m[5] || 0, +m[6] || 0).getTime();
             }
             return Date.parse(v);
         }
@@ -2217,24 +2222,31 @@
             return String(c.v).trim();
         }
 
-        function parseWishes(r) {
+        // rows: [{c:[A,B,C,D,E,...]}]. Every non-empty message in column E is kept.
+        function parseWishes(r, st) {
             var rows = (r && r.table && r.table.rows) || [];
-            var out = [];
+            var out = [], last = 0;
+            st = st || {};
+            st.rows = rows.length; st.empty = 0; st.header = 0;
 
             rows.forEach(function (row, i) {
-                var c = row.c || [];
+                var c = (row && row.c) || [];
                 var t = wishTime(c[0]);
                 var wish = wishText(c[4]);
 
-                // Skip a header row that the sheet API did not detect, and rows without a message
-                if (isNaN(t) && i === 0 && /^(time|timestamp|d[aấ]u th[oờ]i gian|th[oờ]i gian)/i.test(wishText(c[0]))) return;
-                if (!wish) return;
+                // A header row that the API returned as data (only possible as the very first row)
+                if (i === 0 && isNaN(t) && (HDR.test(wishText(c[0])) || HDR.test(wishText(c[1])) || HDR.test(wish))) { st.header++; return; }
 
-                out.push({ t: isNaN(t) ? 0 : t, i: i, name: wishText(c[1]) || "Khách mời", wish: wish });
+                if (!isNaN(t)) last = t;
+                if (!wish) { st.empty++; return; }
+
+                // An unreadable timestamp inherits the previous row's time, so it keeps its place in sheet order
+                out.push({ t: isNaN(t) ? last : t, i: i, name: wishText(c[1]) || "Khách mời", wish: wish });
             });
 
-            // Oldest first; row order keeps ties stable
+            // Oldest first; the sheet's own row order breaks ties (rows are appended chronologically)
             out.sort(function (a, b) { return a.t - b.t || a.i - b.i; });
+            st.kept = out.length;
             return out;
         }
 
@@ -2251,12 +2263,12 @@
                 clearTimeout(timer);
                 try { delete window[cb]; } catch (e) { window[cb] = function () { }; }
                 if (sc.parentNode) sc.parentNode.removeChild(sc);
-                if (err) fail(); else ok(data);
+                if (err) fail(err); else ok(data);
             }
 
-            window[cb] = function (d) { end(false, d); };
-            sc.onerror = function () { end(true); };
-            timer = setTimeout(function () { end(true); }, 9000);
+            window[cb] = function (d) { end(null, d); };
+            sc.onerror = function () { end("network error"); };
+            timer = setTimeout(function () { end("no valid response (private sheet, or script has no doGet)"); }, 8000);
             sc.src = url.replace("{cb}", cb);
             document.body.appendChild(sc);
         }
@@ -2286,35 +2298,39 @@
             }) } };
         }
 
-        // Source 1: Google Sheets query API (JSONP, no CORS needed)
-        function viaJsonp(ok, fail) {
-            jsonp(wishUrl() + "&headers=1&tqx=out:json;responseHandler:{cb}", function (r) {
-                if (!r || r.status === "error") return fail();
-                try { ok(parseWishes(r)); } catch (e) { fail(); }
+        // Source 1 (most complete): the existing Apps Script web app reads every row of the sheet directly
+        function viaScript(ok, fail) {
+            if (!C.z) return fail("no script url");
+            jsonp(C.z + (C.z.indexOf("?") < 0 ? "?" : "&") + "action=wishes&_=" + Date.now() + "&callback={cb}", function (d) {
+                var list = d && (d.rows || d.data || d), st = {};
+                if (!Array.isArray(list)) return fail((d && d.error) || "unexpected response");
+                st.total = d && d.total;
+                ok(parseWishes(rowsToTable(list), st), st);
             }, fail);
         }
 
-        // Source 2: CSV export of the same sheet
+        // Source 2: Google Sheets query API. headers=0 so that no data row is ever consumed as a header
+        function viaJsonp(ok, fail) {
+            jsonp(wishUrl() + "&headers=0&tqx=out:json;responseHandler:{cb}", function (r) {
+                var e = r && r.errors && r.errors[0], st = {};
+                if (!r || r.status === "error") return fail("sheet api: " + ((e && (e.detailed_message || e.message)) || "error"));
+                ok(parseWishes(r, st), st);
+            }, fail);
+        }
+
+        // Source 3: CSV of the same sheet (formatted text, so mixed column types cannot blank a cell)
         function viaCsv(ok, fail) {
-            if (!window.fetch) return fail();
-            fetch(wishUrl() + "&tqx=out:csv").then(function (r) {
-                if (!r.ok) throw 0;
+            if (!window.fetch) return fail("no fetch");
+            fetch(wishUrl() + "&headers=0&tqx=out:csv", { cache: "no-store" }).then(function (r) {
+                if (!r.ok) throw "http " + r.status;
                 return r.text();
             }).then(function (t) {
-                if (/^\s*</.test(t)) throw 0;
-                var rows = csvRows(t).slice(1);
-                ok(parseWishes(rowsToTable(rows)));
-            }).catch(fail);
-        }
-
-        // Source 3: the existing Apps Script web app (needs the doGet shown in the instructions)
-        function viaScript(ok, fail) {
-            if (!C.z) return fail();
-            jsonp(C.z + (C.z.indexOf("?") < 0 ? "?" : "&") + "action=wishes&_=" + Date.now() + "&callback={cb}", function (d) {
-                var list = d && (d.rows || d.data || d);
-                if (!Array.isArray(list)) return fail();
-                try { ok(parseWishes(rowsToTable(list))); } catch (e) { fail(); }
-            }, fail);
+                if (/^\s*</.test(t)) throw "html instead of csv (private sheet)";
+                var rows = csvRows(t), st = {};
+                // The API prefixes its own label row (empty cells or A, B, C…); the sheet's real header is handled by parseWishes
+                if (rows[0] && rows[0].every(function (x) { return x === "" || /^[A-Z]{1,2}$/.test(x); })) rows.shift();
+                ok(parseWishes(rowsToTable(rows), st), st);
+            }).catch(function (e) { fail(String(e && e.message || e)); });
         }
 
         function sameWish(a, b) { return a.name === b.name && a.wish === b.wish; }
@@ -2322,58 +2338,82 @@
         function reconcile() {
             var items = wishState.items || [];
             wishState.pending = wishState.pending.filter(function (p) {
-                return !items.some(function (w) { return sameWish(w, p); });
+                // Drop once the sheet confirms it (or after a few minutes, so a trimmed copy cannot show twice)
+                return Date.now() - p.t < 180000 && !items.some(function (w) { return sameWish(w, p); });
             });
         }
 
-        // Oldest first (same order as the sheet); a just-submitted wish is newest, so it lands last
+        // Sheet rows are already oldest first; a just-submitted wish is the newest, so it goes last
         function allWishes() {
-            var list = (wishState.items || []).concat(wishState.pending);
-            return list.map(function (w, k) { return { w: w, k: k }; })
-                .sort(function (a, b) { return a.w.t - b.w.t || a.k - b.k; })
-                .map(function (x) { return x.w; });
+            return (wishState.items || []).concat(wishState.pending);
         }
 
+        function wishRefresh() {
+            wishCount();
+            if ($("wo").classList.contains("on")) renderWishes();
+        }
+
+        // Runs every source in parallel and keeps the one that returns the most rows,
+        // so a source that silently drops rows can never hide wishes that another one has.
         function loadWishes(done) {
             if (wishState.busy) { if (done) wishState.q.push(done); return; }
             wishState.busy = true;
 
-            var srcs = [viaJsonp, viaCsv, viaScript], fails = 0, won = false;
+            var srcs = [["apps-script", viaScript], ["sheet-json", viaJsonp], ["sheet-csv", viaCsv]];
+            var left = srcs.length, best = 0, diag = [], t0 = Date.now();
 
-            function fin(err, items) {
-                if (won) return;
-                won = true;
+            function settle() {
+                if (--left) return;
                 wishState.busy = false;
-                wishState.err = !!err;
-                if (!err) { wishState.items = items; wishState.at = Date.now(); reconcile(); }
+                wishState.err = !best;
+                wishState.diag = diag;
+                if (WDBG && window.console) console.log("[wishes]", diag, "shown:", best);
                 var cbs = wishState.q.splice(0);
                 if (done) cbs.unshift(done);
                 cbs.forEach(function (fn) { fn(); });
             }
 
-            // All sources run in parallel; the first one that answers wins
-            srcs.forEach(function (src) {
-                src(function (items) { fin(false, items); }, function () {
-                    if (++fails === srcs.length) fin(true);
-                });
+            srcs.forEach(function (s) {
+                var used = false;
+                function fail(why) {
+                    if (used) return; used = true;
+                    diag.push({ src: s[0], ok: false, why: String(why), ms: Date.now() - t0 });
+                    settle();
+                }
+                try {
+                    s[1](function (items, st) {
+                        if (used) return; used = true;
+                        diag.push({ src: s[0], ok: true, n: items.length, st: st, ms: Date.now() - t0 });
+                        if (!best || items.length > best) {
+                            best = items.length;
+                            wishState.items = items;
+                            wishState.at = Date.now();
+                            wishState.err = false;
+                            reconcile();
+                            wishRefresh();
+                        }
+                        settle();
+                    }, fail);
+                } catch (e) { fail(e && e.message || e); }
             });
         }
 
         function renderWishes() {
             var box = $("wl");
             var items = (wishState.items || wishState.pending.length) ? allWishes() : null;
+            var dbg = WDBG ? '<pre style="text-align:left;white-space:pre-wrap;font:11px/1.4 monospace;margin-top:12px">' + esc(JSON.stringify(wishState.diag || [], null, 1)) + '</pre>' : "";
 
             if (!items) {
                 box.innerHTML = wishState.busy || !wishState.err
                     ? '<div class="wd">Đang tải lời chúc…</div>'
-                    : '<div class="wd">Chưa thể tải lời chúc lúc này. Vui lòng kiểm tra Google Sheet đã chia sẻ “Bất kỳ ai có đường liên kết – Người xem”.<br><button type="button" id="wr">Thử lại</button></div>';
+                    : '<div class="wd">Chưa thể tải lời chúc lúc này. Bạn thử lại sau nhé.<br><button type="button" id="wr">Thử lại</button></div>' + dbg;
                 var rb = $("wr");
                 if (rb) rb.onclick = function () { openWishes(true); };
                 return;
             }
 
             if (!items.length) {
-                box.innerHTML = '<div class="wd">Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc nhé!</div>';
+                box.innerHTML = '<div class="wd">Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc nhé!</div>' + dbg;
                 return;
             }
 
@@ -2381,7 +2421,7 @@
                 return '<article class="wc" style="--i:' + Math.min(k, 12) + '">' +
                     '<div class="wn">' + HEART + '<span>' + esc(w.name) + '</span></div>' +
                     '<div class="wt">' + esc(w.wish) + '</div></article>';
-            }).join("");
+            }).join("") + dbg;
         }
 
         function openWishes(force) {
@@ -2612,10 +2652,10 @@
                 time: new Date().toISOString(),
                 name: n,
                 group: g,
-                attending: att ? "Xác nhận tham dự" : "Rất tiếc không thể đến",
                 count: att ? q : 0,
                 wish: $("fw").value.trim(),
-                invited: to || ""
+                invited: to || "",
+                attending: att ? "Xác nhận tham dự" : "Rất tiếc không thể đến"
             };
 
             send(rec).then(function (saved) { if (saved) syncWishes(rec); });
